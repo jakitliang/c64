@@ -762,4 +762,4 @@ RUN printf "id ICON \"$PREFIX/src/c64.ico\"" >c64.rc \
         >>$PREFIX/COPYING.MinGW-w64-runtime.txt \
  && echo $VERSION >$PREFIX/VERSION.txt
 ENV PREFIX=${PREFIX}
-CMD zip -q9Xr - $PREFIX
+CMD ["sh", "-c", "exec zip -q9Xr - \"$PREFIX\""]
