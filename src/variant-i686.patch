@@ -1,0 +1,83 @@
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -1,8 +1,8 @@
+ FROM debian:bookworm-slim AS toolchain
+ 
+ ARG VERSION=1.22.0
+ ARG PREFIX=/c64
+-ARG GCC_PREFIX=$PREFIX/mingw64
++ARG GCC_PREFIX=$PREFIX/mingw32
+ ARG VIM_PREFIX=$PREFIX/opt/vim
+ ARG BINUTILS_VERSION=2.41
+ ARG BUSYBOX_VERSION=FRP-5857-g3681e397f
+@@ -51,7 +51,7 @@
+ COPY src/libmemory.c src/libchkstk.S src/alias.c \
+      $PREFIX/src/
+ 
+-ARG ARCH=x86_64-w64-mingw32
++ARG ARCH=i686-w64-mingw32
+ 
+ # Build cross-compiler
+ 
+@@ -84,6 +84,7 @@
+         --prefix=/bootstrap/$ARCH \
+         --host=$ARCH \
+         --with-default-msvcrt=msvcrt-os \
++        --with-default-win32-winnt=0x0501 \
+  && make -j$(nproc) \
+  && make install
+ 
+@@ -91,6 +92,9 @@
+ WORKDIR /bootstrap
+ RUN ln -s $ARCH mingw
+ 
++# Disable UTF-8 manifest for Windows XP (#58)
++RUN echo >/gcc/gcc/config/i386/winnt-utf8.manifest
++
+ WORKDIR /x-gcc
+ COPY src/gcc-*.patch $PREFIX/src/
+ RUN cat $PREFIX/src/gcc-*.patch | patch -d/gcc -p1 \
+@@ -99,6 +103,7 @@
+         --with-sysroot=/bootstrap \
+         --target=$ARCH \
+         --enable-static \
++        --with-arch=pentium4 \
+         --disable-shared \
+         --with-pic \
+         --enable-languages=c,c++ \
+@@ -132,7 +137,7 @@
+         --with-default-msvcrt=msvcrt-os \
+         --disable-dependency-tracking \
+-        --disable-lib32 \
+-        --enable-lib64 \
++        --enable-lib32 \
++        --disable-lib64 \
+         CFLAGS="-Os" \
+         LDFLAGS="-s" \
+  && make -j$(nproc) \
+@@ -216,6 +221,7 @@
+        --prefix=$GCC_PREFIX/$ARCH \
+         --host=$ARCH \
+         --with-default-msvcrt=msvcrt-os \
++        --with-default-win32-winnt=0x0501 \
+  && make -j$(nproc) \
+  && make install
+ 
+@@ -226,7 +232,7 @@
+        --with-default-msvcrt=msvcrt-os \
+         --disable-dependency-tracking \
+-        --disable-lib32 \
+-        --enable-lib64 \
++        --enable-lib32 \
++        --disable-lib64 \
+         CFLAGS="-Os" \
+         LDFLAGS="-s" \
+  && make -j$(nproc) \
+@@ -250,6 +256,7 @@
+        --with-native-system-header-dir=/include \
+         --target=$ARCH \
+         --host=$ARCH \
++        --with-arch=pentium4 \
+         --enable-static \
+         --disable-shared \
+         --with-pic \

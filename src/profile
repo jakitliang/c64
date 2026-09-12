@@ -1,0 +1,17 @@
+# GNU Autotools "configure" detects c64 as an MSYS2 environment, so
+# set some environment variables to disabuse it. Goes hand-in-hand with
+# the busybox-w32 ash patch for libtool.
+export PATH_SEPARATOR=';'
+export ac_executable_extensions=.exe
+export build_alias=ARCH
+
+# busybox-004-system-profile.patch makes BusyBox sh -l load this file from
+# c64\etc\profile. Source optional POSIX shell startup hooks afterwards.
+if [ -d "$C64_HOME/etc/profile.d" ]; then
+	for i in "$C64_HOME"/etc/profile.d/*.sh; do
+		if [ -r "$i" ]; then
+			. "$i"
+		fi
+	done
+	unset i
+fi

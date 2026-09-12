@@ -1,0 +1,9 @@
+# c64's default Clink settings.
+match.expand_envvars = True
+history.expand_mode = not_dquoted
+history.ignore_space = True
+history.max_lines = 25000
+history.shared = False
+cmd.auto_answer = answer_yes
+color.doskey = yellow
+clink.autoupdate = off

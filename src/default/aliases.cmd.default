@@ -1,0 +1,5 @@
+clear=cls
+pwd=cd
+vi=vim $*
+e.=explorer .
+gl=git log --oneline --all --graph --decorate $*

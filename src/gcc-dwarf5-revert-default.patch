@@ -1,0 +1,27 @@
+# Revert GCC's default DWARF version to 4.
+#
+# Verified against vendor/gcc-13.4.1-tar.xz. The source line positions differ
+# from the original GCC 14 patch, but the surrounding context applies cleanly.
+
+--- a/gcc/common.opt
++++ b/gcc/common.opt
+@@ -3526,7 +3526,7 @@ Common Driver JoinedOrMissing RejectNegative
+ Generate debug information in default version of DWARF format.
+ 
+ gdwarf-
+-Common Driver Joined UInteger Var(dwarf_version) Init(DWARF_VERSION_DEFAULT) RejectNegative
++Common Driver Joined UInteger Var(dwarf_version) Init(4) RejectNegative
+ Generate debug information in DWARF v2 (or later) format.
+ 
+ gdwarf32
+--- a/gcc/defaults.h
++++ b/gcc/defaults.h
+@@ -1454,7 +1454,7 @@
+ /* When generating dwarf info, the default standard version we'll honor
+    and advertise in absence of -gdwarf-<N> on the command line.  */
+ #ifndef DWARF_VERSION_DEFAULT
+-#define DWARF_VERSION_DEFAULT 5
++#define DWARF_VERSION_DEFAULT 4
+ #endif
+ 
+ #ifndef USED_FOR_TARGET

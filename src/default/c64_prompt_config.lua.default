@@ -1,0 +1,12 @@
+-- This is the user-editable Clink prompt configuration for c64.
+
+prompt_type = "full"             -- "full" or "folder"
+prompt_useHomeSymbol = false
+prompt_homeSymbol = "~"
+prompt_lambSymbol = ">"
+prompt_useUserAtHost = false
+prompt_singleLine = false
+
+cwd_color = "\x1b[1;32;49m"
+lamb_color = "\x1b[1;30;49m"
+uah_color = "\x1b[1;33;49m"
