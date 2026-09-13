@@ -725,7 +725,7 @@ COPY src/c64-shell.cmd $PREFIX/c64_shell.cmd
 COPY src/init.cmd $PREFIX/lib/c64/init.cmd
 COPY src/c64-clink.lua $PREFIX/lib/clink/clink.lua
 COPY src/c64-prompt.lua $PREFIX/lib/clink/c64-prompt.lua
-COPY README.md Dockerfile src/c64.ini $PREFIX/
+COPY README.md LICENSE src/c64.ini $PREFIX/
 RUN sed -i 's/\r$//' $PREFIX/etc/profile $PREFIX/etc/default/profile.default \
        $PREFIX/etc/use.d/*.sh
 RUN printf "id ICON \"$PREFIX/src/c64.ico\"" >c64.rc \
@@ -761,6 +761,7 @@ RUN printf "id ICON \"$PREFIX/src/c64.ico\"" >c64.rc \
         >>$PREFIX/COPYING.MinGW-w64-runtime.txt . \
  && cat /mingw-w64-v$MINGW_VERSION/mingw-w64-libraries/winpthreads/COPYING \
         >>$PREFIX/COPYING.MinGW-w64-runtime.txt \
- && echo $VERSION >$PREFIX/VERSION.txt
+ && echo $VERSION >$PREFIX/VERSION.txt \
+ && rm -rf $PREFIX/src
 ENV PREFIX=${PREFIX}
 CMD ["sh", "-c", "exec zip -q9Xr - \"$PREFIX\""]
