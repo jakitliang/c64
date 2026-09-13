@@ -2,7 +2,7 @@
 
 [English](building-projects.md)
 
-使用编译器前，请先选择 `mingw64` 或 `mingw32`。选择仅对当前 CMD 或 shell 会话有效。
+使用编译器前，请先选择发行包包含的工具链：`c64.zip` 中使用 `use mingw64`，`c64-i686.zip` 中使用 `use mingw32`。选择仅对当前 CMD 或 shell 会话有效。
 
 ## 直接使用 GCC 编译
 

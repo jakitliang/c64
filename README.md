@@ -59,9 +59,14 @@ Then build and run it:
   gcc -Wall -Wextra -O2 hello.c -o hello.exe
   hello.exe
 
-Use `use mingw32` instead when building a 32-bit target. Run `use list` to
+The `c64-i686.zip` distribution provides `use mingw32` for 32-bit targets;
+the default `c64.zip` distribution provides `use mingw64`. Run `use list` to
 see the available session helpers. The next section explains the two supplied
 shell environments and their configuration in more detail.
+
+On 64-bit Windows, download the matching `c64-i686.zip` release and merge only
+its `c64/mingw32/` directory into an unpacked `c64.zip` installation to make
+both targets available. See [The `use` command](docs/use-command.md).
 
 ## Documentation
 
@@ -78,7 +83,7 @@ flowchart LR
   A[Unpack c64] --> B[Start c64_shell.cmd]
   B --> C{Choose target}
   C -->|64-bit| D[use mingw64]
-  C -->|32-bit| E[use mingw32]
+  C -->|c64-i686.zip| E[use mingw32]
   D --> F[Build, debug, and check]
   E --> F
 ```
@@ -206,7 +211,7 @@ Except for the standard libraries and Win32 import libraries, c64
 does not include libraries, but you can install additional libraries such
 that the toolchain can find them naturally. There are three options:
 
-1. Install it under the selected target's sysroot at
+1. Install it under the selected distribution's target sysroot at
   `c64/mingw64/x86_64-w64-mingw32/` or `c64/mingw32/i686-w64-mingw32/`.
   The easiest option, but it will require re-installation after upgrading c64. If it
    defines `.pc` files, the `pkg-config` command will automatically find

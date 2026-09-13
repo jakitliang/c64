@@ -42,7 +42,8 @@ c64/
 
 `mingw64/` 中，编译器程序位于 `mingw64/bin/`，目标 sysroot 位于 `mingw64/x86_64-w64-mingw32/`。请在会话中使用 `use mingw64` 选择它，不要将它永久加入系统 PATH。详见 [`use` 命令](use-command_zh.md)。
 
-发行包还可能包含其他目标目录，例如 `mingw32/`；是否存在取决于构建的变体。
+独立的 `c64-i686.zip` 发行包包含 `mingw32/`。在 64 位 Windows 上，可将其
+`mingw32/` 合并到 x64 c64 安装目录，使两种目标都可用。详见 [`use` 命令](use-command_zh.md)。
 
 ## 升级说明
 

@@ -39,14 +39,19 @@ int main(void)
     gcc -Wall -Wextra -O2 hello.c -o hello.exe
     hello.exe
 
-使用 `use mingw32` 构建 32 位程序，使用 `use list` 查看可用的会话助手。
+`c64-i686.zip` 发行包提供用于构建 32 位程序的 `use mingw32`；默认的
+`c64.zip` 发行包提供 `use mingw64`。使用 `use list` 查看可用的会话助手。
+
+在 64 位 Windows 上，可下载相同版本的 `c64-i686.zip`，仅将其
+`c64/mingw32/` 目录合并到已解压的 `c64.zip` 安装目录，从而同时使用两种目标。详见
+[`use` 命令](docs/use-command_zh.md)。
 
 ```mermaid
 flowchart LR
     A[解压 c64] --> B[启动 c64_shell.cmd]
     B --> C{选择目标}
     C -->|64 位| D[use mingw64]
-    C -->|32 位| E[use mingw32]
+    C -->|c64-i686.zip| E[use mingw32]
     D --> F[构建、调试与检查]
     E --> F
 ```
@@ -136,7 +141,7 @@ c64 特有的 `libchkstk.a` 还提供比 GCC（`-lgcc`）更精简、更快的 `
 
 除标准库和 Win32 导入库之外，c64 不包含其他库；但可以按工具链能自然查找的方式安装额外库。有三种选择：
 
-1. 安装到所选目标的 sysroot：`c64/mingw64/x86_64-w64-mingw32/` 或 `c64/mingw32/i686-w64-mingw32/`。这是最简单的方式，但升级 c64 后需要重新安装。若库定义了 `.pc` 文件，`pkg-config` 会自动找到并使用它们。
+1. 安装到所选发行包目标的 sysroot：`c64/mingw64/x86_64-w64-mingw32/` 或 `c64/mingw32/i686-w64-mingw32/`。这是最简单的方式，但升级 c64 后需要重新安装。若库定义了 `.pc` 文件，`pkg-config` 会自动找到并使用它们。
 
 2. 将安装目录追加至 `CPATH` 和 `LIBRARY_PATH` 环境变量。目录之间使用 `;` 分隔；通常可将其写入 `.profile`。
 

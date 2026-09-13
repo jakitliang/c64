@@ -42,7 +42,9 @@ Make configuration changes in `etc/`, not in `bin/`, `lib/`, or `mingw64/`. Thos
 
 `mingw64/` contains the compiler programs in `mingw64/bin/` and the target sysroot under `mingw64/x86_64-w64-mingw32/`. Select it for a session with `use mingw64`; do not add it permanently to the system PATH. See [The `use` command](use-command.md).
 
-A distribution can include other target directories, such as `mingw32/`. Their presence depends on the variant that was built.
+The separate `c64-i686.zip` distribution contains `mingw32/`. On 64-bit
+Windows, its `mingw32/` directory can be merged into an x64 c64 installation
+to make both targets available. See [The `use` command](use-command.md).
 
 ## Upgrade note
 

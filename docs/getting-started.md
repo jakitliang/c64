@@ -20,7 +20,7 @@ A new CMD session has no compiler target selected. Choose one before invoking GC
 
     use mingw64
 
-This selects `x86_64-w64-mingw32`, the normal choice for 64-bit Windows applications. For a 32-bit application, use:
+This selects `x86_64-w64-mingw32`, the normal choice for 64-bit Windows applications. The separate `c64-i686.zip` distribution provides a 32-bit toolchain; after unpacking that distribution, use:
 
     use mingw32
 

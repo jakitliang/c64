@@ -31,6 +31,32 @@ To discard the target and return to only c64's base commands:
 
     use reset
 
+## Add the i686 toolchain to an x64 installation
+
+On 64-bit Windows, one c64 installation can provide both targets. Download the
+matching `c64-i686.zip` release, then extract only its `c64/mingw32/` directory
+into the root of an existing `c64.zip` installation. The resulting layout is:
+
+```text
+c64/
+├── mingw64/
+└── mingw32/
+```
+
+Use matching releases: do not combine toolchain directories from different
+c64 versions. Do not extract the entire i686 archive over the x64
+installation; only merge `mingw32/`. The shared launchers, base tools, and
+configuration should remain those from `c64.zip`.
+
+Start a new c64 session and select the added target:
+
+    use mingw32
+
+Run `use status` to verify that `C64_TARGET` is `i686-w64-mingw32`. Standard
+64-bit Windows installations can run the 32-bit compiler programs through
+WoW64. This is a convenient way to make one portable c64 directory support
+both 64-bit and 32-bit application builds.
+
 ## Component scripts in `use.d`
 
 The commands are implemented by scripts in `etc/use.d/`:

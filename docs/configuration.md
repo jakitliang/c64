@@ -40,4 +40,4 @@ title=c64 development environment
 
 ## Keep target choice session-local
 
-Do not permanently prepend `mingw64/bin` or `mingw32/bin` to a global PATH. Start c64 and select a target with `use mingw64` or `use mingw32` per session. This avoids accidental compiler selection and lets one installation support both targets cleanly.
+Do not permanently prepend the distribution's `mingw64/bin` or `mingw32/bin` to a global PATH. Start c64 and select its installed target with `use mingw64` or `use mingw32` per session. This avoids accidental compiler selection and keeps each distribution's toolchain isolated.

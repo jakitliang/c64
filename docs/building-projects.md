@@ -2,7 +2,7 @@
 
 [中文](building-projects_zh.md)
 
-Select `mingw64` or `mingw32` before using a compiler. The selection is local to the current CMD or shell session.
+Select the toolchain included with the distribution before using a compiler: `use mingw64` in `c64.zip`, or `use mingw32` in `c64-i686.zip`. Selection is local to the current CMD or shell session.
 
 ## Compile directly with GCC
 

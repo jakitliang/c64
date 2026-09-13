@@ -40,4 +40,4 @@ title=c64 development environment
 
 ## 让目标选择保持会话级
 
-不要把 `mingw64/bin` 或 `mingw32/bin` 永久加入全局 PATH。每个会话启动 c64 后，再执行 `use mingw64` 或 `use mingw32` 选择目标。这样可避免误用编译器，并让同一安装目录干净地支持两种目标。
+不要将发行包中的 `mingw64/bin` 或 `mingw32/bin` 永久加入全局 PATH。每个会话启动 c64 后，再执行 `use mingw64` 或 `use mingw32` 选择已安装的目标。这样可避免误用编译器，并使每个发行包的工具链彼此隔离。
