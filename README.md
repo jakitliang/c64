@@ -1,5 +1,9 @@
 # c64: Portable C and C++ Development Environment for Windows
 
+![c64 banner](docs/banner.jpg)
+
+> **c64 — the C64 fullerene-inspired fusion environment: Ultra-Light Build, Seamless Shell, POSIX Core.**
+
 c64 is a small, self-contained development environment for building C and C++
 applications on Windows. It is built from source by the included Dockerfile,
 then distributed as a `.zip` file that can be unpacked and used anywhere.

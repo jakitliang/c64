@@ -1,5 +1,9 @@
 # c64：Windows 便携式 C/C++ 开发环境
 
+![c64 横幅](docs/banner.jpg)
+
+> **c64 —— 以 C64 富勒烯为灵感的融合环境：Ultra-Light Build、Seamless Shell、POSIX Core。**
+
 [English](README.md)
 
 c64 是一套小巧、独立的 Windows C/C++ 开发环境。它通过仓库中的 Dockerfile 从源码构建，再以可在任意位置解压使用的 `.zip` 形式分发。
