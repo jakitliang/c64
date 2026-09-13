@@ -24,6 +24,12 @@ This selects `x86_64-w64-mingw32`, the normal choice for 64-bit Windows applicat
 
     use mingw32
 
+The i686 distribution is the Windows XP-compatible edition. It targets the
+Windows XP API baseline and Pentium 4 CPU architecture by default. Use it when
+the compiler or the program being built must run on 32-bit Windows XP. This
+baseline does not make newer APIs or third-party libraries XP-compatible, so
+test the final program on XP when that is a supported deployment target.
+
 Selection changes `PATH` only for the current session. Check the current state with:
 
     use status

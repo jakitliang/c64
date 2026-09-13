@@ -24,6 +24,11 @@
 
     use mingw32
 
+i686 发行包是面向 Windows XP 的兼容版本，默认使用 Windows XP API 基线和
+Pentium 4 CPU 架构。需要让编译器本身或构建产物运行在 32 位 Windows XP 时，
+请使用它。该基线不会让较新的 API 或第三方库自动兼容 XP；若 XP 是支持目标，
+请在 XP 上测试最终程序。
+
 该选择仅影响当前会话的 `PATH`。可用下列命令查看当前状态：
 
     use status

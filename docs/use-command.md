@@ -48,6 +48,11 @@ c64 versions. Do not extract the entire i686 archive over the x64
 installation; only merge `mingw32/`. The shared launchers, base tools, and
 configuration should remain those from `c64.zip`.
 
+The added i686 toolchain retains the i686 distribution's Windows XP API
+baseline and Pentium 4 CPU baseline. It is suitable for building XP-targeted
+programs from a 64-bit Windows host; the 32-bit compiler programs run there
+through WoW64.
+
 Start a new c64 session and select the added target:
 
     use mingw32

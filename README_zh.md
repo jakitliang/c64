@@ -9,6 +9,7 @@ c64 是一套小巧、独立的 Windows C/C++ 开发环境。它通过仓库中�
 * **免安装、免管理员权限。** 解压即可使用，不再需要时直接删除。
 * **默认离线。** 使用开发环境时不会要求或尝试访问互联网。
 * **便携的静态运行时组件。** x64 与 x86 MinGW 工具链可按每个 CMD 会话独立选择。
+* **可选 Windows XP 支持。** 独立的 i686 发行包按 32 位 Windows XP 兼容性构建。
 * **可构建、可定制。** 全部工具链与定制均可在干净、可重复的环境中从源码构建。
 
 内置 MinGW-w64 GCC、GDB、Make、CMake、Ninja、BusyBox、Vim、Universal Ctags、NASM、Cppcheck 与 Ccache。工具链还包括 pthreads、C++11 线程和 OpenMP。
@@ -41,6 +42,16 @@ int main(void)
 
 `c64-i686.zip` 发行包提供用于构建 32 位程序的 `use mingw32`；默认的
 `c64.zip` 发行包提供 `use mingw64`。使用 `use list` 查看可用的会话助手。
+
+### Windows XP 兼容性
+
+`c64-i686.zip` 是面向 32 位 Windows XP 的兼容发行版。其工具链默认使用
+Windows XP API 基线和 Pentium 4 CPU 架构，因此通过 `use mingw32` 构建的
+程序无需手动添加这些选项即可面向 Windows XP。需要让编译器本身或构建产物
+运行在 32 位 Windows XP 时，请使用该发行包。
+
+这只是工具链基线，并不能保证任意程序都兼容 XP：源码、第三方库和运行时行为
+同样必须避免使用 XP 不支持的 API。应在所支持的最旧 Windows 版本上测试最终程序。
 
 在 64 位 Windows 上，可下载相同版本的 `c64-i686.zip`，仅将其
 `c64/mingw32/` 目录合并到已解压的 `c64.zip` 安装目录，从而同时使用两种目标。详见

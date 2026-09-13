@@ -12,6 +12,8 @@ Why c64:
   an internet connection.
 * **Portable, static runtime components.** x64 and x86 MinGW toolchains are
   selected independently for each CMD session.
+* **Windows XP option.** The separate i686 distribution is built for 32-bit
+  Windows XP compatibility.
 * **Buildable and adaptable.** The complete toolchain and its customizations
   are built from source in a clean, repeatable environment.
 
@@ -63,6 +65,18 @@ The `c64-i686.zip` distribution provides `use mingw32` for 32-bit targets;
 the default `c64.zip` distribution provides `use mingw64`. Run `use list` to
 see the available session helpers. The next section explains the two supplied
 shell environments and their configuration in more detail.
+
+### Windows XP compatibility
+
+`c64-i686.zip` is the 32-bit, Windows XP-compatible edition. Its toolchain
+defaults to the Windows XP API baseline and Pentium 4 CPU architecture, so
+programs built with `use mingw32` can target Windows XP without adding those
+options manually. Use this distribution when the compiler itself or the
+program being built must run on 32-bit Windows XP.
+
+This is a toolchain baseline, not a guarantee for every program: your source,
+third-party libraries, and runtime behavior must also avoid APIs unavailable
+on XP. Test the final program on the oldest Windows version you support.
 
 On 64-bit Windows, download the matching `c64-i686.zip` release and merge only
 its `c64/mingw32/` directory into an unpacked `c64.zip` installation to make
