@@ -1,9 +1,19 @@
 # c64: Portable C and C++ Development Environment for Windows
 
-c64 is a Dockerfile that builds from source a small, portable development
-environment for creating C and C++ applications on Windows. Its stable base
-tools are always available; x64 and x86 MinGW toolchains are selected per CMD
-session.
+c64 is a small, self-contained development environment for building C and C++
+applications on Windows. It is built from source by the included Dockerfile,
+then distributed as a `.zip` file that can be unpacked and used anywhere.
+
+Why c64:
+
+* **No installation or administrator access.** Unpack it, use it, and delete
+  it when it is no longer needed.
+* **Offline by default.** Using the development kit never requires or attempts
+  an internet connection.
+* **Portable, static runtime components.** x64 and x86 MinGW toolchains are
+  selected independently for each CMD session.
+* **Buildable and adaptable.** The complete toolchain and its customizations
+  are built from source in a clean, repeatable environment.
 
 Included tools:
 
@@ -19,11 +29,61 @@ Included tools:
 * [Ccache][ccache] : compiler cache
 
 The toolchain includes pthreads, C++11 threads, and OpenMP. All included
-runtime components are static. **Docker/Podman is not required to use the
-development kit**. It's merely a reliable, clean environment for building
-the kit itself.
+runtime components are static. **Docker or Podman is not required to use the
+development kit**; it is only needed to build the kit itself.
 
-## Build
+## Quick start
+
+After unpacking a c64 distribution, start the CMD + Clink environment from
+the installation root:
+
+  c64_shell.cmd /unicode
+
+Select a target toolchain. Most users will want 64-bit Windows:
+
+  use mingw64
+
+Create `hello.c`:
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+  puts("Hello, c64!");
+}
+```
+
+Then build and run it:
+
+  gcc -Wall -Wextra -O2 hello.c -o hello.exe
+  hello.exe
+
+Use `use mingw32` instead when building a 32-bit target. Run `use list` to
+see the available session helpers. The next section explains the two supplied
+shell environments and their configuration in more detail.
+
+## Documentation
+
+Use the [English documentation](docs/README.md) to learn c64 by task. Every
+guide has a paired [Chinese version](docs/README_zh.md). The Chinese homepage
+is [README_zh](README_zh.md).
+
+Start with [Getting started](docs/getting-started.md), then see [Directory
+layout](docs/directory-layout.md), [The `use` command](docs/use-command.md),
+and [Personalization](docs/personalization.md) for the core c64 workflow.
+
+```mermaid
+flowchart LR
+  A[Unpack c64] --> B[Start c64_shell.cmd]
+  B --> C{Choose target}
+  C -->|64-bit| D[use mingw64]
+  C -->|32-bit| E[use mingw32]
+  D --> F[Build, debug, and check]
+  E --> F
+```
+
+## Build the distribution
 
 First build the image, then run it to produce a distribution .zip file:
 
@@ -31,10 +91,11 @@ First build the image, then run it to produce a distribution .zip file:
     docker run --rm c64 >c64.zip
 
 This takes about half an hour on modern systems. You will need an internet
-connection during the first few minutes of the build. **Note:** Do not use
-PowerShell because it lacks file redirection.
+connection during the first few minutes of the build. Run the second command
+from `cmd.exe`, Git Bash, or WSL rather than PowerShell, whose text-oriented
+redirection is unsuitable for this binary archive output.
 
-## Usage
+## Runtime environments
 
 The final .zip file contains tools in a typical unix-like configuration.
 Unzip the contents anywhere. `c64.exe` is a self-contained launcher for a
@@ -70,7 +131,7 @@ configuration. Each supplied configuration has a matching factory template in
 `etc\default\`. Delete an active configuration file to restore its default at
 the next `c64_shell.cmd` startup.
 
-## Build cache
+## Compiler cache
 
 After selecting a target, `use ccache` transparently and
 automatically caches GCC builds in Ccache:
@@ -79,22 +140,6 @@ automatically caches GCC builds in Ccache:
   use ccache
 
   Or use `ccache`, `ccache-gcc`, or `ccache-g++` directly.
-
-## Main features
-
-* No installation required. Run it anywhere as any user. Simply delete
-  when no longer needed.
-
-* Fully offline. No internet access is ever required or attempted.
-
-* A focus on static linking all runtime components. The runtime is
-  optimized for size.
-
-* Trivial to build from source, meaning it's easy to tweak and adjust any
-  part of the kit for your own requirements.
-
-* [Complements Go](https://nullprogram.com/blog/2021/06/29/) for cgo and
-  bootstrapping.
 
 ## Optimized for size
 
