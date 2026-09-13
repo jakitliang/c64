@@ -1,6 +1,6 @@
 FROM debian:bookworm-slim AS toolchain
 
-ARG VERSION=1.22.0
+ARG VERSION=1.0.0
 ARG PREFIX=/c64
 ARG GCC_PREFIX=$PREFIX/mingw64
 ARG VIM_PREFIX=$PREFIX/opt/vim
@@ -10,8 +10,8 @@ ARG CCACHE_VERSION=4.13.1
 ARG CMAKE_VERSION=3.27.9
 ARG CTAGS_VERSION=6.2.1
 ARG EXPAT_VERSION=2.6.2
-ARG GCC_FALLBACK_VERSION=13.2.0
-ARG GCC_FALLBACK_SHA256=e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da
+ARG GCC_FALLBACK_VERSION=13.5.0
+ARG GCC_FALLBACK_SHA256=b70c44c68f75f0cf5f5ecf55a5339fce3b78ae21c6e81a2491514270e9ed5fe4
 ARG GDB_VERSION=13.1
 ARG GMP_VERSION=6.3.0
 ARG LIBICONV_VERSION=1.17
@@ -41,7 +41,7 @@ RUN curl --insecure --location --remote-name-all --remote-header-name \
         https://downloads.sourceforge.net/project/mingw-w64/mingw-w64/mingw-w64-release/mingw-w64-v$MINGW_VERSION.tar.bz2
 # A vendored gcc-*tar.xz archive takes precedence when present. Copy the
 # directory rather than a named archive so a clean vendor directory still
-# permits the upstream fallback.
+# permits the c64-maintained fallback.
 COPY vendor/ /vendor/
 COPY src/SHA256SUMS.core $PREFIX/src/
 RUN sha256sum -c $PREFIX/src/SHA256SUMS.core \
@@ -54,11 +54,11 @@ RUN sha256sum -c $PREFIX/src/SHA256SUMS.core \
               tar xJf "$1" -C gcc --strip-components=1; \
        else \
               echo "Vendored GCC archive not found; downloading GCC $GCC_FALLBACK_VERSION"; \
-              curl --insecure --location --remote-name \
-                     https://ftp.gnu.org/gnu/gcc/gcc-$GCC_FALLBACK_VERSION/gcc-$GCC_FALLBACK_VERSION.tar.xz; \
-              printf '%s  %s\n' "$GCC_FALLBACK_SHA256" "gcc-$GCC_FALLBACK_VERSION.tar.xz" | sha256sum -c; \
+              curl --insecure --location --output gcc-$GCC_FALLBACK_VERSION.tar.gz \
+                     https://github.com/jakitliang/gcc/archive/refs/tags/$GCC_FALLBACK_VERSION.tar.gz; \
+              printf '%s  %s\n' "$GCC_FALLBACK_SHA256" "gcc-$GCC_FALLBACK_VERSION.tar.gz" | sha256sum -c; \
               mkdir gcc; \
-              tar xJf gcc-$GCC_FALLBACK_VERSION.tar.xz -C gcc --strip-components=1; \
+              tar xzf gcc-$GCC_FALLBACK_VERSION.tar.gz -C gcc --strip-components=1; \
        fi \
  && tar xJf gmp-$GMP_VERSION.tar.xz \
  && tar xzf mpc-$MPC_VERSION.tar.gz \
@@ -715,7 +715,6 @@ RUN rm -rf $PREFIX/share/man/ $PREFIX/share/info/ $PREFIX/share/gcc-* \
 COPY src/c64.c src/c64.ico src/debugbreak.c src/pkg-config.c \
        src/vc++filt.c src/peports.c src/profile \
      $PREFIX/src/
-COPY src/use.cmd $PREFIX/bin/
 COPY src/profile $PREFIX/etc/profile
 COPY src/profile.cmd $PREFIX/etc/profile.cmd
 COPY src/profile $PREFIX/etc/default/profile.default
@@ -727,6 +726,8 @@ COPY src/init.cmd $PREFIX/lib/c64/init.cmd
 COPY src/c64-clink.lua $PREFIX/lib/clink/clink.lua
 COPY src/c64-prompt.lua $PREFIX/lib/clink/c64-prompt.lua
 COPY README.md Dockerfile src/c64.ini $PREFIX/
+RUN sed -i 's/\r$//' $PREFIX/etc/profile $PREFIX/etc/default/profile.default \
+       $PREFIX/etc/use.d/*.sh
 RUN printf "id ICON \"$PREFIX/src/c64.ico\"" >c64.rc \
  && $ARCH-windres -o c64.o c64.rc \
  && $ARCH-gcc -DVERSION=$VERSION -nostdlib -fno-asynchronous-unwind-tables \

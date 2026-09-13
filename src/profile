@@ -5,6 +5,45 @@ export PATH_SEPARATOR=';'
 export ac_executable_extensions=.exe
 export build_alias=ARCH
 
+# `use` must be a function: an external command cannot modify this shell's
+# environment. Component scripts are sourced so selection persists.
+use()
+{
+	if [ -z "${C64_BASE_PATH-}" ]; then
+		C64_BASE_PATH=$PATH
+		export C64_BASE_PATH
+	fi
+	case ${1-} in
+	help|'')
+		echo 'Usage: use <component> [arguments]'
+		echo
+		echo 'Components are provided by $C64_HOME/etc/use.d/*.sh.'
+		echo 'Run "use list" to show installed components.'
+		return 0
+		;;
+	list)
+		echo 'Installed c64 components:'
+		for script in "$C64_HOME"/etc/use.d/*.sh; do
+			if [ -r "$script" ]; then
+				name=${script##*/}
+				printf '  %s\n' "${name%.sh}"
+			fi
+		done
+		unset script name
+		return 0
+		;;
+	esac
+	script=$C64_HOME/etc/use.d/$1.sh
+	if [ -r "$script" ]; then
+		shift
+		. "$script" "$@"
+		return $?
+	fi
+	echo "c64: unknown component \"$1\"" >&2
+	echo 'Run "use list" to show installed components.' >&2
+	return 1
+}
+
 # busybox-004-system-profile.patch makes BusyBox sh -l load this file from
 # c64\etc\profile. Source optional POSIX shell startup hooks afterwards.
 if [ -d "$C64_HOME/etc/profile.d" ]; then
