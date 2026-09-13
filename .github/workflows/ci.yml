@@ -52,7 +52,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - name: Apply distribution variant
         if: matrix.patch != ''
-        run: git apply --check ${{ matrix.patch }} && git apply ${{ matrix.patch }}
+        run: patch --binary --dry-run -p1 -i ${{ matrix.patch }} && patch --binary -p1 -i ${{ matrix.patch }}
       - name: Build the distribution image
         run: docker buildx build --load --tag c64:ci .
       - name: Export and verify the distribution

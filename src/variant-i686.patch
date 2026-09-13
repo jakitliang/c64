@@ -81,3 +81,7 @@
          --enable-static \
          --disable-shared \
          --with-pic \
+@@ -444,2 +444,3 @@
+ WORKDIR /cmake
++RUN test "$ARCH" != i686-w64-mingw32 || sed -i '/check_symbol_exists(inet_ntop/a set(HAVE_INET_NTOP OFF)' /cmake-$CMAKE_VERSION/Utilities/cmcurl/CMakeLists.txt
+ RUN cmake -G "Unix Makefiles" \
