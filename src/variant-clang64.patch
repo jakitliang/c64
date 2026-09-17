@@ -1,0 +1,204 @@
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -2,7 +2,7 @@
+ 
+ ARG VERSION=1.0.0
+ ARG PREFIX=/c64
+-ARG GCC_PREFIX=$PREFIX/mingw64
++ARG GCC_PREFIX=$PREFIX/clang64
+ ARG VIM_PREFIX=$PREFIX/opt/vim
+ ARG BINUTILS_VERSION=2.41
+ ARG BUSYBOX_VERSION=FRP-5857-g3681e397f
+@@ -18,6 +18,7 @@
+ ARG MPC_VERSION=1.3.1
+ ARG MPFR_VERSION=4.2.1
+ ARG NASM_VERSION=2.15.05
++ARG LLVM_VERSION=19.1.7
+ ARG NINJA_VERSION=1.12.1
+ ARG PDCURSES_VERSION=3.9
+ ARG CPPCHECK_VERSION=2.10
+@@ -43,7 +44,7 @@
+ # directory rather than a named archive so a clean vendor directory still
+ # permits the c64-maintained fallback.
+ COPY vendor/ /vendor/
+-COPY src/SHA256SUMS.core $PREFIX/src/
++COPY src/SHA256SUMS.core src/SHA256SUMS.llvm $PREFIX/src/
+ RUN sha256sum -c $PREFIX/src/SHA256SUMS.core \
+  && tar xJf binutils-$BINUTILS_VERSION.tar.xz \
+  && set -- /vendor/gcc-*tar.xz \
+@@ -63,7 +64,9 @@
+  && tar xJf gmp-$GMP_VERSION.tar.xz \
+  && tar xzf mpc-$MPC_VERSION.tar.gz \
+  && tar xJf mpfr-$MPFR_VERSION.tar.xz \
+- && tar xjf mingw-w64-v$MINGW_VERSION.tar.bz2
++ && tar xjf mingw-w64-v$MINGW_VERSION.tar.bz2 \
++ && (cd /vendor && sha256sum -c $PREFIX/src/SHA256SUMS.llvm) \
++ && tar xzf /vendor/llvm-project-$LLVM_VERSION.tar.gz
+ COPY src/libmemory.c src/libchkstk.S src/alias.c \
+      $PREFIX/src/
+ 
+@@ -92,7 +95,7 @@
+ RUN /mingw-w64-v$MINGW_VERSION/mingw-w64-headers/configure \
+         --prefix=/bootstrap/$ARCH \
+         --host=$ARCH \
+-        --with-default-msvcrt=msvcrt-os \
++        --with-default-msvcrt=ucrt \
+  && make -j$(nproc) \
+  && make install
+ 
+@@ -138,7 +141,7 @@
+         --prefix=/bootstrap/$ARCH \
+         --with-sysroot=/bootstrap/$ARCH \
+         --host=$ARCH \
+-        --with-default-msvcrt=msvcrt-os \
++        --with-default-msvcrt=ucrt \
+         --disable-dependency-tracking \
+         --disable-lib32 \
+         --enable-lib64 \
+@@ -225,7 +228,7 @@
+ RUN /mingw-w64-v$MINGW_VERSION/mingw-w64-headers/configure \
+        --prefix=$GCC_PREFIX/$ARCH \
+         --host=$ARCH \
+-        --with-default-msvcrt=msvcrt-os \
++        --with-default-msvcrt=ucrt \
+  && make -j$(nproc) \
+  && make install
+ 
+@@ -234,7 +237,7 @@
+        --prefix=$GCC_PREFIX/$ARCH \
+        --with-sysroot=$GCC_PREFIX/$ARCH \
+         --host=$ARCH \
+-        --with-default-msvcrt=msvcrt-os \
++        --with-default-msvcrt=ucrt \
+         --disable-dependency-tracking \
+         --disable-lib32 \
+         --enable-lib64 \
+@@ -317,5 +320,59 @@
+             -o $GCC_PREFIX/bin/$ARCH-{}.exe $PREFIX/src/alias.c -lkernel32
+ 
++# Build native TableGen tools required by the cross build of LLVM/Clang.
++FROM toolchain AS build-llvm-native-tools
++WORKDIR /llvm-native
++RUN cmake -G Ninja \
++        -DCMAKE_BUILD_TYPE=Release \
++        -DLLVM_ENABLE_PROJECTS=clang \
++        -DLLVM_ENABLE_TERMINFO=OFF \
++        -DLLVM_ENABLE_LIBEDIT=OFF \
++        -DLLVM_ENABLE_ZLIB=OFF \
++        -DLLVM_ENABLE_ZSTD=OFF \
++        -DLLVM_INCLUDE_BENCHMARKS=OFF \
++        -DLLVM_INCLUDE_EXAMPLES=OFF \
++        -DLLVM_INCLUDE_TESTS=OFF \
++        /llvm-project-$LLVM_VERSION/llvm \
++ && ninja llvm-tblgen clang-tblgen \
++ && mkdir -p /llvm-native-tools/bin \
++ && cp bin/llvm-tblgen bin/clang-tblgen /llvm-native-tools/bin/
++
++# Cross-build the Windows-hosted Clang and LLD drivers. GCC remains a build
++# dependency and runtime provider only; its drivers are removed when packaging.
++FROM toolchain AS build-clang
++COPY --from=build-llvm-native-tools /llvm-native-tools/ /llvm-native-tools/
++WORKDIR /llvm-clang
++RUN cmake -G Ninja \
++        -DCMAKE_BUILD_TYPE=MinSizeRel \
++        -DCMAKE_SYSTEM_NAME=Windows \
++        -DCMAKE_C_COMPILER=$ARCH-gcc \
++        -DCMAKE_CXX_COMPILER=$ARCH-g++ \
++        -DCMAKE_RC_COMPILER=$ARCH-windres \
++        -DCMAKE_INSTALL_PREFIX=$GCC_PREFIX \
++        -DCMAKE_EXE_LINKER_FLAGS="-static -static-libgcc -static-libstdc++ -s" \
++        -DLLVM_HOST_TRIPLE=x86_64-w64-windows-gnu \
++        -DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-w64-windows-gnu \
++        -DLLVM_NATIVE_TOOL_DIR=/llvm-native-tools/bin \
++        -DLLVM_TARGETS_TO_BUILD=X86 \
++        -DLLVM_ENABLE_PROJECTS="clang;lld" \
++        -DLLVM_ENABLE_TERMINFO=OFF \
++        -DLLVM_ENABLE_LIBEDIT=OFF \
++        -DLLVM_ENABLE_ZLIB=OFF \
++        -DLLVM_ENABLE_ZSTD=OFF \
++        -DLLVM_ENABLE_LIBXML2=OFF \
++        -DLLVM_ENABLE_CURL=OFF \
++        -DLLVM_INCLUDE_BENCHMARKS=OFF \
++        -DLLVM_INCLUDE_EXAMPLES=OFF \
++        -DLLVM_INCLUDE_TESTS=OFF \
++        /llvm-project-$LLVM_VERSION/llvm \
++ && ninja \
++ && ninja install \
++ && mkdir -p /artifacts/clang$GCC_PREFIX/bin /artifacts/clang$GCC_PREFIX/lib \
++ && cp -a $GCC_PREFIX/lib/clang /artifacts/clang$GCC_PREFIX/lib/ \
++ && for tool in clang clang++ ld.lld lld-link llvm-ar llvm-ranlib llvm-nm llvm-objcopy llvm-strip; do \
++        cp $GCC_PREFIX/bin/$tool.exe /artifacts/clang$GCC_PREFIX/bin/; \
++    done
++
+ # Build Ctags independently from the common toolchain.
+ FROM toolchain AS build-ctags
+ COPY src/SHA256SUMS.ctags $PREFIX/src/
+@@ -395,6 +439,12 @@
+         -Os -fno-asynchronous-unwind-tables -Wl,--gc-sections -s -nostdlib \
+         -o $GCC_PREFIX/bin/ccache-g++.exe $PREFIX/src/alias.c -lkernel32 \
++ && $ARCH-gcc -DEXE=ccache.exe -DCMD=clang \
++        -Os -fno-asynchronous-unwind-tables -Wl,--gc-sections -s -nostdlib \
++        -o $GCC_PREFIX/bin/ccache-clang.exe $PREFIX/src/alias.c -lkernel32 \
++ && $ARCH-gcc -DEXE=ccache.exe -DCMD=clang++ \
++        -Os -fno-asynchronous-unwind-tables -Wl,--gc-sections -s -nostdlib \
++        -o $GCC_PREFIX/bin/ccache-clang++.exe $PREFIX/src/alias.c -lkernel32 \
+  && printf '%s\n' gcc cc c89 c99 $ARCH-gcc \
+     | xargs -I{} -P$(nproc) \
+         $ARCH-gcc -DEXE=../bin/ccache.exe -DCMD=gcc \
+           -Os -fno-asynchronous-unwind-tables \
+@@ -411,5 +460,11 @@
+               -Os -fno-asynchronous-unwind-tables \
+           -Wl,--gc-sections -s -nostdlib \
+-          -o $GCC_PREFIX/lib/ccache/{}.com $PREFIX/src/alias.c -lkernel32
++          -o $GCC_PREFIX/lib/ccache/{}.com $PREFIX/src/alias.c -lkernel32 \
++ && printf '%s\n' clang clang++ \
++    | xargs -I{} -P$(nproc) \
++        $ARCH-gcc -DEXE=../bin/ccache.exe -DCMD={} \
++          -Os -fno-asynchronous-unwind-tables \
++          -Wl,--gc-sections -s -nostdlib \
++          -o $GCC_PREFIX/lib/ccache/{}.com $PREFIX/src/alias.c -lkernel32
+ RUN mkdir -p /artifacts/ccache$GCC_PREFIX \
+  && cp -a $GCC_PREFIX/bin $GCC_PREFIX/lib /artifacts/ccache$GCC_PREFIX/
+@@ -704,6 +759,7 @@
+ COPY --from=build-gendef /artifacts/gendef/ /
+ COPY --from=build-ctags /artifacts/ctags/ /
+ COPY --from=build-ccache /artifacts/ccache/ /
++COPY --from=build-clang /artifacts/clang/ /
+ COPY --from=build-cmake /artifacts/cmake/ /
+ COPY --from=build-gdb /artifacts/gdb/ /
+ COPY --from=build-extras /artifacts/extras/ /
+@@ -720,9 +776,15 @@
+ 
+ WORKDIR /
+ RUN rm -rf $PREFIX/share/man/ $PREFIX/share/info/ $PREFIX/share/gcc-* \
+-        $GCC_PREFIX/share/gcc-* \
++        $GCC_PREFIX/libexec/ $GCC_PREFIX/share/gcc-* \
+  && rm -rf $PREFIX/lib/*.a $PREFIX/lib/*.la $PREFIX/include/*.h \
+-        $GCC_PREFIX/lib/*.a $GCC_PREFIX/lib/*.la $GCC_PREFIX/include/*.h
++        $GCC_PREFIX/lib/*.a $GCC_PREFIX/lib/*.la $GCC_PREFIX/include/*.h \
++ && rm -f $GCC_PREFIX/bin/cc.exe $GCC_PREFIX/bin/c89.exe \
++        $GCC_PREFIX/bin/c99.exe $GCC_PREFIX/bin/c++.exe \
++        $GCC_PREFIX/bin/cpp.exe $GCC_PREFIX/bin/g++.exe \
++        $GCC_PREFIX/bin/gcc.exe $GCC_PREFIX/bin/gcc-*.exe \
++        $GCC_PREFIX/bin/ccache-gcc.exe $GCC_PREFIX/bin/ccache-g++.exe \
++        $GCC_PREFIX/bin/$ARCH-*.exe
+ COPY src/c64.c src/c64.ico src/debugbreak.c src/pkg-config.c \
+        src/vc++filt.c src/peports.c src/profile \
+      $PREFIX/src/
+@@ -753,7 +816,14 @@
+         -Os -fno-asynchronous-unwind-tables -fno-builtin -Wl,--gc-sections \
+         -s -nostdlib -o $PREFIX/bin/peports.exe $PREFIX/src/peports.c \
+         -lkernel32 -lshell32 \
+- && $ARCH-gcc -DEXE=pkg-config.exe -DCMD=pkg-config \
++ && printf '%s\n' \
++        '--target=x86_64-w64-windows-gnu' \
++        '--sysroot=<CFGDIR>/../x86_64-w64-mingw32' \
++        '--gcc-toolchain=<CFGDIR>/..' \
++        '-fuse-ld=lld' \
++       >$GCC_PREFIX/bin/clang.cfg \
++ && cp $GCC_PREFIX/bin/clang.cfg $GCC_PREFIX/bin/clang++.cfg \
++ && $ARCH-gcc -DEXE=pkg-config.exe -DCMD=pkg-config \
+         -Os -fno-asynchronous-unwind-tables -Wl,--gc-sections -s -nostdlib \
+         -o $GCC_PREFIX/bin/$ARCH-pkg-config.exe $PREFIX/src/alias.c -lkernel32 \
+  && mkdir -p $GCC_PREFIX/$ARCH/lib/pkgconfig \
+*** End Patch
