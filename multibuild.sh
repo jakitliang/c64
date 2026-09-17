@@ -68,14 +68,22 @@ for base in $arch; do
 done
 
 target="tmp-c64-$$"
+stashed=no
 cleanup() {
     $dryrun git checkout .
-    $dryrun git stash pop
+    if [ "$stashed" = yes ]; then
+        $dryrun git stash pop
+    fi
     $dryrun docker rmi --no-prune $target || true
 }
 trap cleanup INT TERM
 
-$dryrun git stash
+if [ -n "$dryrun" ]; then
+    $dryrun git stash
+elif ! git diff --quiet || ! git diff --cached --quiet; then
+    git stash
+    stashed=yes
+fi
 for build in $builds; do
     $dryrun git checkout .
     (
