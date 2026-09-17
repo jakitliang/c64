@@ -73,7 +73,7 @@
          --disable-dependency-tracking \
          --disable-lib32 \
          --enable-lib64 \
-@@ -317,5 +320,59 @@
+@@ -317,5 +320,60 @@
              -o $GCC_PREFIX/bin/$ARCH-{}.exe $PREFIX/src/alias.c -lkernel32
  
 +# Build native TableGen tools required by the cross build of LLVM/Clang.
@@ -111,6 +111,7 @@
 +        -DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-w64-windows-gnu \
 +        -DLLVM_NATIVE_TOOL_DIR=/llvm-native-tools/bin \
 +        -DLLVM_TARGETS_TO_BUILD=X86 \
++        -DLLVM_PARALLEL_LINK_JOBS=1 \
 +        -DLLVM_ENABLE_PROJECTS="clang;lld" \
 +        -DLLVM_ENABLE_TERMINFO=OFF \
 +        -DLLVM_ENABLE_LIBEDIT=OFF \
