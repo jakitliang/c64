@@ -159,6 +159,16 @@
 +          -o $GCC_PREFIX/lib/ccache/{}.com $PREFIX/src/alias.c -lkernel32
  RUN mkdir -p /artifacts/ccache$GCC_PREFIX \
   && cp -a $GCC_PREFIX/bin $GCC_PREFIX/lib /artifacts/ccache$GCC_PREFIX/
+@@ -697,8 +752,8 @@
+ WORKDIR /vim90/src
+ RUN ARCH= make -j$(nproc) -f Make_ming.mak \
+         OPTIMIZE=SIZE STATIC_STDCPLUS=yes HAS_GCC_EH=no \
+         UNDER_CYGWIN=yes CROSS=yes CROSS_COMPILE=$ARCH- \
+-        FEATURES=HUGE VIMDLL=yes NETBEANS=no WINVER=0x0501 \
++        FEATURES=HUGE VIMDLL=yes NETBEANS=no WINVER=0x0501 XPM=no \
+  && $ARCH-strip vimrun.exe \
+  && rm -rf ../runtime/tutor/tutor.* \
+  && mkdir -p $PREFIX/bin $VIM_PREFIX \
 @@ -704,6 +759,7 @@
  COPY --from=build-gendef /artifacts/gendef/ /
  COPY --from=build-ctags /artifacts/ctags/ /
