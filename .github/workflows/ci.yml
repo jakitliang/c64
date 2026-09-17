@@ -42,14 +42,27 @@ jobs:
           - name: c64
             archive: c64.zip
             patch: ''
+            llvm_archive: ''
           - name: c64-i686
             archive: c64-i686.zip
             patch: src/variant-i686.patch
+            llvm_archive: ''
+          - name: c64-clang64
+            archive: c64-clang64.zip
+            patch: src/variant-clang64.patch
+            llvm_archive: llvm-project-19.1.7.tar.gz
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
+      - name: Download LLVM source archive
+        if: matrix.llvm_archive != ''
+        run: |
+          curl --fail --location --retry 3 \
+            --output vendor/${{ matrix.llvm_archive }} \
+            https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/${{ matrix.llvm_archive }}
+          (cd vendor && sha256sum -c ../src/SHA256SUMS.llvm)
       - name: Apply distribution variant
         if: matrix.patch != ''
         run: patch --binary --dry-run -p1 -i ${{ matrix.patch }} && patch --binary -p1 -i ${{ matrix.patch }}
