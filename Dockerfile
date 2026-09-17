@@ -28,7 +28,7 @@ ARG XXHASH_VERSION=0.8.3
 ARG ZSTD_VERSION=1.5.7
 
 RUN apt-get update && apt-get install --yes --no-install-recommends \
-       build-essential cmake curl file flex libgmp-dev libmpc-dev libmpfr-dev m4 unzip zip
+       build-essential bzip2 cmake curl file flex libgmp-dev libmpc-dev libmpfr-dev m4 ninja-build python3 unzip zip
 
 # Download, verify, and unpack only the compiler bootstrap inputs. Optional
 # tools download immediately before their build, preserving this expensive cache.
