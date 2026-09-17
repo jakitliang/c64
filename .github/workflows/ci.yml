@@ -61,7 +61,7 @@ jobs:
         run: |
           curl --fail --location --retry 3 \
             --output vendor/${{ matrix.llvm_archive }} \
-            https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/${{ matrix.llvm_archive }}
+            https://github.com/jakitliang/llvm-project/archive/refs/tags/19.1.7.tar.gz
           (cd vendor && sha256sum -c ../src/SHA256SUMS.llvm)
       - name: Apply distribution variant
         if: matrix.patch != ''
