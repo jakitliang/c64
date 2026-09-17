@@ -33,15 +33,6 @@ c64 是一套小巧、独立的 Windows C/C++ 开发环境。它以 C64 富勒�
 
 创建 `hello.c`：
 
-```c
-#include <stdio.h>
-
-int main(void)
-{
-    puts("Hello, c64!");
-}
-```
-
 编译并运行：
 
     gcc -Wall -Wextra -O2 hello.c -o hello.exe
@@ -96,6 +87,17 @@ Docker 或 Podman 仅用于构建 c64，本身并非运行时要求。构建镜�
     docker run --rm c64 >c64.zip
 
 构建通常约需半小时，开始时需要互联网下载源码。第二条命令应在 `cmd.exe`、Git Bash 或 WSL 中执行，不应使用 PowerShell 重定向二进制 ZIP 输出。
+
+### 实验性 clang64 发行包
+
+`multibuild.sh -c` 会构建 `c64-clang64.zip`。这是面向 Windows 10 及更高版本的实验性
+64 位工具链，通过 `use clang64` 选择。它包含 Clang、LLD、LLVM binutils 工具，以及基于
+UCRT 的 MinGW-w64 sysroot。GCC 仅用于构建发行包，不会作为用户可调用的编译器包含在最终归档中。
+
+    ./multibuild.sh -c
+
+clang64 使用 UCRT runtime；不要在 object file 或 static library 边界将它与默认 mingw64
+发行包的 MSVCRT runtime 混用。
 
 ## 运行环境
 

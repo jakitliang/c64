@@ -121,6 +121,19 @@ connection during the first few minutes of the build. Run the second command
 from `cmd.exe`, Git Bash, or WSL rather than PowerShell, whose text-oriented
 redirection is unsuitable for this binary archive output.
 
+### Experimental clang64 release
+
+The `multibuild.sh -c` variant builds `c64-clang64.zip`, an experimental
+64-bit Windows 10+ toolchain selected with `use clang64`. It contains Clang,
+LLD, and LLVM binutils tools with a UCRT-based MinGW-w64 sysroot. GCC is used
+only while building the distribution and is not included as a user-facing
+compiler in the resulting archive.
+
+  ./multibuild.sh -c
+
+The clang64 runtime uses UCRT and must not be mixed at an object-file or
+static-library boundary with the default mingw64 release's MSVCRT runtime.
+
 ## Runtime environments
 
 The final .zip file contains tools in a typical unix-like configuration.
