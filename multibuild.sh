@@ -16,11 +16,12 @@ suffix="$(git describe --exact-match 2>/dev/null | tr v - || true)"
 
 usage() {
     cat <<EOF
-usage: multibuild.sh [-48abfhnOs] [-s SUFFIX]
+usage: multibuild.sh [-48abcfhnOs] [-s SUFFIX]
   -4         Enable i686 build (default: no)
   -8         Enable x86_64 build (default: auto)
   -a         All: Enable all builds
   -b         Enable vanilla build (default: auto)
+    -c         Enable clang64 build (default: no)
   -f         Enable Fortran build (default: no)
   -h         Print this help message
   -n         Dry run, print commands but do nothing
@@ -29,12 +30,13 @@ usage: multibuild.sh [-48abfhnOs] [-s SUFFIX]
 EOF
 }
 
-while getopts 48abfhmnOs: opt; do
+while getopts 48abcfhmnOs: opt; do
     case $opt in
         4) arch="$arch c64-i686";;
         8) arch="$arch c64";;
         a) flavors="X -fortran"; arch="c64 c64-i686";;
         b) flavors="$flavors X";;
+        c) flavors="$flavors -clang64";;
         f) flavors="$flavors -fortran";;
         h) usage; exit 0;;
         n) dryrun=echo;;
