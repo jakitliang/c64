@@ -196,20 +196,31 @@
  COPY src/c64.c src/c64.ico src/debugbreak.c src/pkg-config.c \
         src/vc++filt.c src/peports.c src/profile \
       $PREFIX/src/
-@@ -753,7 +816,14 @@
+@@ -753,7 +816,26 @@
          -Os -fno-asynchronous-unwind-tables -fno-builtin -Wl,--gc-sections \
          -s -nostdlib -o $PREFIX/bin/peports.exe $PREFIX/src/peports.c \
          -lkernel32 -lshell32 \
 - && $ARCH-gcc -DEXE=pkg-config.exe -DCMD=pkg-config \
++ && gcc_runtime=$(echo $GCC_PREFIX/lib/gcc/$ARCH/*) \
++ && if [ ! -f "$gcc_runtime/libgcc_eh.a" ]; then \
++        cp "$gcc_runtime/libgcc.a" "$gcc_runtime/libgcc_eh.a"; \
++    fi \
 + && printf '%s\n' \
 +        '--target=x86_64-w64-windows-gnu' \
 +        '--sysroot=<CFGDIR>/../x86_64-w64-mingw32' \
 +        '--gcc-toolchain=<CFGDIR>/..' \
++        "-L<CFGDIR>/../lib/gcc/$ARCH/$(basename "$gcc_runtime")" \
++        '-static-libgcc' \
++        '-pthread' \
 +        '-fuse-ld=lld' \
 +       >$GCC_PREFIX/bin/clang.cfg \
 + && cp $GCC_PREFIX/bin/clang.cfg $GCC_PREFIX/bin/clang++.cfg \
++ && printf '%s\n' \
++        "-isystem<CFGDIR>/../lib/gcc/$ARCH/$(basename "$gcc_runtime")/include/c++" \
++        "-isystem<CFGDIR>/../lib/gcc/$ARCH/$(basename "$gcc_runtime")/include/c++/$ARCH" \
++        "-isystem<CFGDIR>/../lib/gcc/$ARCH/$(basename "$gcc_runtime")/include/c++/backward" \
++       >>$GCC_PREFIX/bin/clang++.cfg \
 + && $ARCH-gcc -DEXE=pkg-config.exe -DCMD=pkg-config \
          -Os -fno-asynchronous-unwind-tables -Wl,--gc-sections -s -nostdlib \
          -o $GCC_PREFIX/bin/$ARCH-pkg-config.exe $PREFIX/src/alias.c -lkernel32 \
   && mkdir -p $GCC_PREFIX/$ARCH/lib/pkgconfig \
-*** End Patch
