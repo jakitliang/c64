@@ -7,6 +7,7 @@
 | 目标 | 文档 |
 | --- | --- |
 | 启动 c64 并编译第一个程序 | [快速开始](getting-started_zh.md) · [English](getting-started.md) |
+| 按目标与工作流选择工具链 | [工具链](toolchains_zh.md) · [English](toolchains.md) |
 | 了解解压后的 c64 发行包 | [目录结构](directory-layout_zh.md) · [English](directory-layout.md) |
 | 选择工具链并添加会话组件 | [`use` 命令](use-command_zh.md) · [English](use-command.md) |
 | 使用 GCC、Make、CMake 和 Ninja 构建项目 | [构建项目](building-projects_zh.md) · [English](building-projects.md) |

@@ -7,6 +7,7 @@ This documentation explains how to use and customize the portable c64 developmen
 | Task | Guide |
 | --- | --- |
 | Start c64 and compile a first program | [Getting started](getting-started.md) · [中文](getting-started_zh.md) |
+| Choose a toolchain for your target and workflow | [Toolchains](toolchains.md) · [中文](toolchains_zh.md) |
 | Understand the unpacked c64 distribution | [Directory layout](directory-layout.md) · [中文](directory-layout_zh.md) |
 | Select toolchains and add session components | [The `use` command](use-command.md) · [中文](use-command_zh.md) |
 | Build projects with GCC, Make, CMake, and Ninja | [Building projects](building-projects.md) · [中文](building-projects_zh.md) |

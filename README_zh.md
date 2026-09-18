@@ -16,6 +16,8 @@ c64 是一套小巧、独立的 Windows C/C++ 开发环境。它以 C64 富勒�
 * **免安装、免管理员权限。** 解压即可使用，不再需要时直接删除。
 * **默认离线。** 使用开发环境时不会要求或尝试访问互联网。
 * **便携的静态运行时组件。** x64 与 x86 MinGW 工具链可按每个 CMD 会话独立选择。
+* **现代化 Clang 环境。** 独立的 clang64 发行包提供 Clang、LLD、LLVM 工具和基于
+    UCRT 的 MinGW-w64 sysroot，适用于现代 Windows 开发。
 * **可选 Windows XP 支持。** 独立的 i686 发行包按 32 位 Windows XP 兼容性构建。
 * **可构建、可定制。** 全部工具链与定制均可在干净、可重复的环境中从源码构建。
 
@@ -72,6 +74,7 @@ flowchart LR
 | 目标 | 文档 |
 | --- | --- |
 | 解压、启动并编译第一个程序 | [快速开始](docs/getting-started_zh.md) |
+| 选择三套工具链并了解适用场景 | [工具链](docs/toolchains_zh.md) |
 | 了解解压后的 c64 发行包 | [目录结构](docs/directory-layout_zh.md) |
 | 选择工具链并添加会话组件 | [`use` 命令](docs/use-command_zh.md) |
 | 用 GCC、Make、CMake 和 Ninja 构建项目 | [构建项目](docs/building-projects_zh.md) |
@@ -87,17 +90,6 @@ Docker 或 Podman 仅用于构建 c64，本身并非运行时要求。构建镜�
     docker run --rm c64 >c64.zip
 
 构建通常约需半小时，开始时需要互联网下载源码。第二条命令应在 `cmd.exe`、Git Bash 或 WSL 中执行，不应使用 PowerShell 重定向二进制 ZIP 输出。
-
-### 实验性 clang64 发行包
-
-`multibuild.sh -c` 会构建 `c64-clang64.zip`。这是面向 Windows 10 及更高版本的实验性
-64 位工具链，通过 `use clang64` 选择。它包含 Clang、LLD、LLVM binutils 工具，以及基于
-UCRT 的 MinGW-w64 sysroot。GCC 仅用于构建发行包，不会作为用户可调用的编译器包含在最终归档中。
-
-    ./multibuild.sh -c
-
-clang64 使用 UCRT runtime；不要在 object file 或 static library 边界将它与默认 mingw64
-发行包的 MSVCRT runtime 混用。
 
 ## 运行环境
 

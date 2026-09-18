@@ -19,6 +19,9 @@ Why c64:
   an internet connection.
 * **Portable, static runtime components.** x64 and x86 MinGW toolchains are
   selected independently for each CMD session.
+* **Modern Clang environment.** An independent clang64 distribution provides
+  Clang, LLD, LLVM tools, and a UCRT-based MinGW-w64 sysroot for modern
+  Windows development.
 * **Windows XP option.** The separate i686 distribution is built for 32-bit
   Windows XP compatibility.
 * **Buildable and adaptable.** The complete toolchain and its customizations
@@ -95,8 +98,8 @@ Use the [English documentation](docs/README.md) to learn c64 by task. Every
 guide has a paired [Chinese version](docs/README_zh.md). The Chinese homepage
 is [README_zh](README_zh.md).
 
-Start with [Getting started](docs/getting-started.md), then see [Directory
-layout](docs/directory-layout.md), [The `use` command](docs/use-command.md),
+Start with [Getting started](docs/getting-started.md), then see [Toolchains](docs/toolchains.md),
+[Directory layout](docs/directory-layout.md), [The `use` command](docs/use-command.md),
 and [Personalization](docs/personalization.md) for the core c64 workflow.
 
 ```mermaid
@@ -120,19 +123,6 @@ This takes about half an hour on modern systems. You will need an internet
 connection during the first few minutes of the build. Run the second command
 from `cmd.exe`, Git Bash, or WSL rather than PowerShell, whose text-oriented
 redirection is unsuitable for this binary archive output.
-
-### Experimental clang64 release
-
-The `multibuild.sh -c` variant builds `c64-clang64.zip`, an experimental
-64-bit Windows 10+ toolchain selected with `use clang64`. It contains Clang,
-LLD, and LLVM binutils tools with a UCRT-based MinGW-w64 sysroot. GCC is used
-only while building the distribution and is not included as a user-facing
-compiler in the resulting archive.
-
-  ./multibuild.sh -c
-
-The clang64 runtime uses UCRT and must not be mixed at an object-file or
-static-library boundary with the default mingw64 release's MSVCRT runtime.
 
 ## Runtime environments
 
