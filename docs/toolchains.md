@@ -10,7 +10,7 @@ c64 provides three independent Windows toolchains. Select one for the current CM
 | `mingw32` | `c64-i686.zip` | `gcc`, `g++` | i686 MinGW-w64, MSVCRT, Windows XP API baseline | 32-bit Windows and Windows XP compatibility |
 | `clang64` | `c64-clang64.zip` | `clang`, `clang++` | x86_64 MinGW-w64, UCRT | Modern 64-bit Windows development with Clang, LLD, LLVM tools, CMake, and IDE integration |
 
-Each distribution is self-contained. `mingw32` may be added to an unpacked `c64.zip` by merging its `c64/mingw32/` directory. Keep `clang64` as its own installation: it has an independent sysroot and runtime.
+Each distribution is self-contained. To make several toolchains available from one c64 shell, unpack matching releases into the same location: merge `c64/mingw32/` from `c64-i686.zip` and `c64/clang64/` from `c64-clang64.zip` into an unpacked `c64.zip`. Each toolchain still has its own sysroot and runtime directory.
 
 ## Choose by scenario
 
@@ -67,7 +67,7 @@ For 32-bit software that does not require XP, the same toolchain remains appropr
 
 ## Modern Clang: `clang64`
 
-Build or obtain `c64-clang64.zip`, unpack it independently, and select its Clang environment. Use it for scenarios such as:
+Build or obtain `c64-clang64.zip`, merge its `c64/clang64/` directory into the same c64 installation, and select its Clang environment. Use it for scenarios such as:
 
 * A new C++20/C++23 application where Clang diagnostics and LLVM tooling are preferred.
 * A CMake project opened in CLion or another IDE that is configured to use Clang.
@@ -82,7 +82,7 @@ For example:
 
 `clang64` supplies Clang, LLD, and LLVM binutils with a UCRT-based MinGW-w64 sysroot. Its driver configuration already supplies the matching GCC support runtime and C++ standard-library include paths; invoke `clang` and `clang++` normally rather than manually adding those paths.
 
-For CMake, set `CMAKE_C_COMPILER` to the `clang.exe` in the clang64 installation and `CMAKE_CXX_COMPILER` to its `clang++.exe`; choose a fresh build directory after changing compilers. In CLion, configure a separate toolchain and CMake profile for clang64 rather than reusing a GCC build directory.
+For CMake, set `CMAKE_C_COMPILER` to the `clang.exe` in the c64 `clang64` directory and `CMAKE_CXX_COMPILER` to its `clang++.exe`; choose a fresh build directory after changing compilers. In CLion, configure a separate toolchain and CMake profile for clang64 rather than reusing a GCC build directory.
 
 ## Runtime and library boundaries
 

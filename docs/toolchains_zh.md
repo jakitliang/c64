@@ -10,7 +10,7 @@ c64 提供三套相互独立的 Windows 工具链。使用 `use` 为当前 CMD �
 | `mingw32` | `c64-i686.zip` | `gcc`、`g++` | i686 MinGW-w64、MSVCRT、Windows XP API 基线 | 32 位 Windows 和 Windows XP 兼容性 |
 | `clang64` | `c64-clang64.zip` | `clang`、`clang++` | x86_64 MinGW-w64、UCRT | 基于 Clang、LLD、LLVM 工具、CMake 与 IDE 的现代 64 位 Windows 开发 |
 
-每个发行包均可独立使用。可将 `c64-i686.zip` 中的 `c64/mingw32/` 合并到已解压的 `c64.zip`，以加入 `mingw32`。`clang64` 应保持独立安装：它有自己的 sysroot 与运行时。
+每个发行包均可独立使用。若要在同一个 c64 shell 中使用多套工具链，请将相同版本的发行包解压到同一位置：把 `c64-i686.zip` 中的 `c64/mingw32/` 和 `c64-clang64.zip` 中的 `c64/clang64/` 合并到已解压的 `c64.zip`。每套工具链仍保有自己的 sysroot 和运行时目录。
 
 ## 按场景选择
 
@@ -67,7 +67,7 @@ c64 提供三套相互独立的 Windows 工具链。使用 `use` 为当前 CMD �
 
 ## 现代 Clang：`clang64`
 
-构建或获取 `c64-clang64.zip`，将其独立解压后选择 Clang 环境。它适合以下场景：
+构建或获取 `c64-clang64.zip`，将其中的 `c64/clang64/` 合并到同一份 c64 安装后选择 Clang 环境。它适合以下场景：
 
 * 偏好 Clang 诊断和 LLVM 工具的新 C++20/C++23 应用。
 * 在 CLion 或其他配置为使用 Clang 的 IDE 中打开的 CMake 项目。
@@ -82,7 +82,7 @@ c64 提供三套相互独立的 Windows 工具链。使用 `use` 为当前 CMD �
 
 `clang64` 提供 Clang、LLD、LLVM binutils 以及基于 UCRT 的 MinGW-w64 sysroot。驱动配置已包含匹配的 GCC 支持运行时和 C++ 标准库头文件路径；正常调用 `clang` 与 `clang++` 即可，无需手动追加这些路径。
 
-在 CMake 中，将 `CMAKE_C_COMPILER` 设置为 clang64 安装中的 `clang.exe`，并将 `CMAKE_CXX_COMPILER` 设置为其中的 `clang++.exe`；切换编译器后应使用新的构建目录。在 CLion 中，应为 clang64 配置单独的工具链和 CMake Profile，而不是复用 GCC 的构建目录。
+在 CMake 中，将 `CMAKE_C_COMPILER` 设置为 c64 `clang64` 目录中的 `clang.exe`，并将 `CMAKE_CXX_COMPILER` 设置为其中的 `clang++.exe`；切换编译器后应使用新的构建目录。在 CLion 中，应为 clang64 配置单独的工具链和 CMake Profile，而不是复用 GCC 的构建目录。
 
 ## 运行时与库边界
 
